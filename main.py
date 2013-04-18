@@ -1,6 +1,5 @@
 import sys, getopt
 
-from debug import *
 from reddit import *
 
 DEBUG = False
@@ -38,11 +37,17 @@ def doStuff(source, depth):
         results.networkDict = {}
         return results
 
+    """
+    subreddit = info.children[0]
+    if subreddit not in results.subsDict:
+        r = doStuff(subreddit, depth-1)
+        results.join(r)
+    """
     for subreddit in info.children:
-        if subreddit not in results.networkDict:
+        if subreddit not in results.subsDict:
             r = doStuff(subreddit, depth-1)
             results.join(r)
-
+            
     return results
 
 #idea: results
@@ -159,7 +164,7 @@ def main(argv):
         print 'Non-numerical depth'
         sys.exit(2)
 
-    subreddit = args[0]
+    subreddit = args[0].lower()
     fileName = subreddit + '_' + str(depth) + '.json'
 
 

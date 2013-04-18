@@ -1,6 +1,5 @@
 import sys,urllib2, re
 from bs4 import BeautifulSoup
-from debug import *
 
 TRIES_LIMIT = 100
 
@@ -44,7 +43,7 @@ def getSubredditsFromSidebar(side):
 			name = address[3:]
 			#print name # some subreddits do this wrong, the butts
 			if address[:3] == '/r/' and isValidSubredditName(name): 
-				subreddits += [str(name)]
+				subreddits += [str(name).lower()]
 
 	return subreddits
 
@@ -52,14 +51,14 @@ def getSubscriberCount(side):
 	try:
 		subscriberString = side.find('span', 'subscribers').find('span', 'number').text
 	except AttributeError:
-		print "couldn't find subscribers, quitting"
-		sys.exit(-1)
+		print "couldn't find subscribers, skipping"
+		return 0
 
 	try:
 		nSubs = int(subscriberString.replace(",",""))
 	except ValueError:
-		print "Couldn't find subscriber count, quitting"
-		sys.exit(-1)
+		print "Couldn't find subscriber count, skipping"
+		return 0
 	return nSubs
 
 def getSidebar(soup):
@@ -80,7 +79,7 @@ def getPage(subredditName):
 			tries += 1
 
 		if tries >= TRIES_LIMIT:
-			print "giving up"
+			print "skipping"
 			return None
 
 	print "success"
