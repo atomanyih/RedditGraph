@@ -1,8 +1,10 @@
 import sys, getopt
 
 from reddit import *
+from metastats import *
 
-DEBUG = False
+visitedSubreddits = []
+metaStats = MetaStats()
 
 class Results:
     def __init__(self):
@@ -23,6 +25,12 @@ def joinDicts(d1,d2):
     return dict(d1.items() + d2.items())
 
 def doStuff(source, depth):
+    global metaStats
+    metaStats.subreddits += 1
+
+    global visitedSubreddits
+    visitedSubreddits += [source]
+
     if depth == 0:
         return Results()
 
@@ -33,21 +41,19 @@ def doStuff(source, depth):
     results = Results()
     results.addInfo(info)
 
+    metaStats.compareChildren(source,len(info.children))
+
     if depth == 1:
         results.networkDict = {}
         return results
 
-    """
-    subreddit = info.children[0]
-    if subreddit not in results.subsDict:
-        r = doStuff(subreddit, depth-1)
-        results.join(r)
-    """
     for subreddit in info.children:
-        if subreddit not in results.subsDict:
+        if subreddit not in visitedSubreddits:
             r = doStuff(subreddit, depth-1)
             results.join(r)
             
+        print "skipping", subreddit
+
     return results
 
 #idea: results
@@ -175,6 +181,9 @@ def main(argv):
             DEBUG = True
         
     results = doStuff(subreddit, depth)
+
+    global metaStats
+    print metaStats
 
     writeResultsToFile(fileName, results)
 

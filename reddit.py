@@ -10,7 +10,7 @@ class SubredditInfo:
 		self.subscribers = 0
 
 def getSubredditInfo(subredditName):
-	print "-",subredditName
+	print "-",subredditName.upper()
 	page = getPage(subredditName)
 
 	if page is None:
