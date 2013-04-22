@@ -1,4 +1,4 @@
-import sys, getopt
+import sys, getopt, json
 
 from reddit import *
 from metastats import *
@@ -71,6 +71,7 @@ def doStuff(source, depth):
 #   network is source + network of each child
 #   subscriber is source + subscribers of each child
 
+# from network dict
 def makeIndexDictionary(d):
     indDict = {}
     itemList= d.keys()
@@ -136,24 +137,85 @@ def resultsToString(r):
 
     return s
 
+def makeDataDictionary(results):
+    dataDict = {}
+
+    (indDict,nodeList) = makeIndexDictionary(results.networkDict)
+
+    nodesList = []
+    for item in nodeList:
+        node = {'name': item, 'subscribers': results.subsDict[item]}
+        nodesList += [node]
+
+    linksList = []
+
+    items = results.networkDict.items()
+    for item in items:
+        source = item[0]
+        for target in item[1]:
+            link = {'source':indDict[source], 'target':indDict[target]}
+            linksList += [link]
+
+    dataDict['nodes'] = nodesList
+    dataDict['links'] = linksList
+    #print nodesList
+    #print linksList
+
+    return dataDict
+
+
 def makeNodeLine(name,size):
     return '{ "name": "' + name + '", "subscribers":' + str(size) + '}'
 
 def makeLinkLine(sInd,tInd):
     return '  { "source": ' + str(sInd) + ', "target": ' + str(tInd) + '}'
 
-def writeResultsToFile(fileName,results):
-    s = resultsToString(results)
-
-    f = open(fileName, 'w')
+def writeDictToFile(filename,d):
+    s = json.dumps(d, indent=2, separators=(',', ': '))
+    f = open(filename, 'w')
     f.write(s)
+
+def loadDataFile(filename):
+    f = open(filename, 'r')
+    d = json.loads(f.read())
+
+    return decodeData(d)
+    #return d
+
+# takes the dict loaded from json to result
+def decodeData(dataDict):
+    results = Results()
+    nodesList = dataDict['nodes']
+    linksList = dataDict['links']
+
+
+    subsDict = {}
+    nameList = []
+    for node in nodesList:
+        name = str(node['name'])
+        nameList += [name]
+        subsDict[name] = node['subscribers']
+
+    networkDict = {}
+    for link in linksList:
+        source = nameList[link['source']]
+        target = nameList[link['target']]
+        if source not in networkDict:
+            networkDict[source] = []
+        networkDict[source] += [target]
+
+    results.networkDict = networkDict
+    results.subsDict = subsDict
+
+    return results
+
 
 def usage():
     print "You did it wrong"
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, 'df:')
+        opts, args = getopt.getopt(argv, 'c:f:')
     except getopt.GetoptError as err:
         print err
         usage()
@@ -171,21 +233,28 @@ def main(argv):
         sys.exit(2)
 
     subreddit = args[0].lower()
-    fileName = subreddit + '_' + str(depth) + '.json'
+    filename = subreddit + '_' + str(depth) + '.json'
+    origFilename = None
 
 
     for opt, arg in opts:
         if opt == '-f':
-            fileName = arg
-        elif opt == '-d':
-            DEBUG = True
-        
-    results = doStuff(subreddit, depth)
+            filename = arg
+        elif opt == '-c':
+            origFilename = arg
+    
+    results = Results()
+
+    if origFilename is not None:
+        results = loadDataFile(origFilename)  
+
+    results.join(doStuff(subreddit, depth))
 
     global metaStats
     print metaStats
 
-    writeResultsToFile(fileName, results)
+    dataDict = makeDataDictionary(results)
+    writeDictToFile(filename, dataDict)
 
 
 if __name__ == "__main__":

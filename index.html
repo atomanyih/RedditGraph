@@ -62,7 +62,7 @@ d3.json("data.json", function(error, graph) {
       .attr("stroke-opacity", .3)
       .call(force.drag);
 
-  /*var textLayer = svg.append("svg:g").selectAll("g")
+  var textLayer = svg.append("svg:g").selectAll("g")
       .data(force.nodes())
       .enter().append("svg:g");
 
@@ -74,7 +74,7 @@ d3.json("data.json", function(error, graph) {
 
   textLayer.attr("transform", function(d) {
     return "translate(" + d.x + "," + d.y + ")";
-  });*/
+  });
 
   node.append("title")
       .text(function(d) { return d.name + "\n" + d.subscribers; });
@@ -98,9 +98,9 @@ d3.json("data.json", function(error, graph) {
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
-    /*textLayer.attr("transform", function(d) {
+    textLayer.attr("transform", function(d) {
         return "translate(" + d.x + "," + d.y + ")";
-      });*/
+      });
   });
 });
 
