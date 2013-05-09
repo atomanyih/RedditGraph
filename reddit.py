@@ -1,7 +1,7 @@
 import sys,urllib2, re
 from bs4 import BeautifulSoup
 
-TRIES_LIMIT = 100
+TRIES_LIMIT = 50
 
 class SubredditInfo:
 	def __init__(self):
@@ -52,13 +52,13 @@ def getSubscriberCount(side):
 		subscriberString = side.find('span', 'subscribers').find('span', 'number').text
 	except AttributeError:
 		print "couldn't find subscribers, skipping"
-		return 0
+		return 1
 
 	try:
 		nSubs = int(subscriberString.replace(",",""))
 	except ValueError:
 		print "Couldn't find subscriber count, skipping"
-		return 0
+		return 1
 	return nSubs
 
 def getSidebar(soup):

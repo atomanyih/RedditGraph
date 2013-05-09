@@ -5,6 +5,7 @@ from metastats import *
 from redditinfo import *
 
 visitedSubreddits = []
+nonexistantSubreddits = []
 metaStats = MetaStats()
 
 class Results:
@@ -21,6 +22,7 @@ class Results:
         self.networkDict = joinDicts(self.networkDict,other.networkDict)
         self.subsDict = joinDicts(self.subsDict,other.subsDict)
 
+
     def addInfo(self,info):
         self.networkDict[info.name] = info.children
         self.subsDict[info.name] = info.subscribers
@@ -31,10 +33,41 @@ class Results:
         else:
             statsDict[statName] = joinDicts(statsDict[statName],statDict)
 
+    #TODO add proper joining for stats dict
 
 #d2 has precedence
 def joinDicts(d1,d2):
     return dict(d1.items() + d2.items())
+
+def getOtherData(subredditList):
+    analyzer = SubredditAnalyzer()
+    avgCommentsDict = {}
+    ratioDict = {}
+
+    for name in subredditList:
+        print name.upper()
+
+        print "- getting upvote_ratio"
+
+        try:
+            ratio = analyzer.getUpvoteRatioInTop(name)
+        except:
+            ratio = .5
+
+        avg = 1
+        """
+        print "- getting avg comments"
+
+        try:
+            avg = analyzer.getAvgCommentsInTop(name)
+        except:
+            avg = 1
+        """
+        avgCommentsDict[name] = avg
+        ratioDict[name] = ratio
+
+    statsDict = {"average_comments": avgCommentsDict, "upvote_ratio": ratioDict}
+    return statsDict
 
 def doStuff(source, depth):
     global metaStats
@@ -43,12 +76,14 @@ def doStuff(source, depth):
     global visitedSubreddits
     visitedSubreddits += [source]
 
-    if depth == 0:
+    global nonexistantSubreddits
+    if depth == 0 or source in nonexistantSubreddits:
         return Results()
 
     info = getSubredditInfo(source)
     if info is None:
-        return None
+        nonexistantSubreddits += [source]
+        return Results() #None
         
     results = Results()
     results.addInfo(info)
@@ -63,8 +98,8 @@ def doStuff(source, depth):
         if subreddit not in visitedSubreddits:
             r = doStuff(subreddit, depth-1)
             results.join(r)
-            
-        print "skipping", subreddit
+        else:    
+            print "- skipping", subreddit, "already accessed"
 
     return results
 
@@ -84,7 +119,8 @@ def doStuff(source, depth):
 #   subscriber is source + subscribers of each child
 
 # from network dict
-def makeIndexDictionary(d):
+def makeIndexDictionary(r):
+    d = r.networkDict
     indDict = {}
     itemList= d.keys()
     valueList = d.values()
@@ -92,7 +128,10 @@ def makeIndexDictionary(d):
     for values in valueList:
         for value in values:
             if value not in itemList:
-                itemList += [value]
+                if value in r.subsDict: #using subs dict to checka actual existence
+                    itemList += [value]
+                else:
+                    print value, "not found, removing"
 
     i = 0
     for item in itemList:
@@ -101,19 +140,27 @@ def makeIndexDictionary(d):
 
     return (indDict,itemList) #this sucks
 
+def makeNode(item, subscribers, statsDict):
+    node = {'name': item, 'subscribers': subscribers}
+
+    for key in statsDict:
+        node[key] = statsDict[key][item]
+
+    return node
 
 def makeDataDictionary(results):
     dataDict = {}
 
-    (indDict,nodeList) = makeIndexDictionary(results.networkDict)
+    (indDict,nodeList) = makeIndexDictionary(results)
 
     nodesList = []
     for item in nodeList:
         if item in results.subsDict:
             subscribers = results.subsDict[item]
         else:
-            subscribers = 1
-        node = {'name': item, 'subscribers': subscribers}
+            print item, "not found while subs"
+        node = makeNode(item, subscribers, results.statsDict)
+
         nodesList += [node]
 
     linksList = []
@@ -121,7 +168,14 @@ def makeDataDictionary(results):
     items = results.networkDict.items()
     for item in items:
         source = item[0]
+        if source not in nodeList:
+            print source, "not found as source"
+            continue
+
         for target in item[1]:
+            if target not in nodeList:
+                print target, "not found as target"
+                continue
             link = {'source':indDict[source], 'target':indDict[target]}
             linksList += [link]
 
@@ -175,6 +229,7 @@ def decodeData(dataDict):
 
 def usage():
     print "You did it wrong"
+    print ""
 
 def main(argv):
     try:
@@ -206,6 +261,8 @@ def main(argv):
         elif opt == '-s':
             origFilename = arg
     
+    # crawling
+    print "     --       crawling       --"
     results = Results()
 
     if origFilename is not None:
@@ -213,12 +270,20 @@ def main(argv):
 
     results.join(doStuff(subreddit, depth))
 
+    subredditList = results.subsDict.keys()
+
     global metaStats
     print metaStats
 
+
+    # praw data collection
+    print "    -- collecting other data --"
+
+    results.statsDict = getOtherData(subredditList)
+
+    print "    --   writing dictionary   --"
     dataDict = makeDataDictionary(results)
     writeDictToFile(filename, dataDict)
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
