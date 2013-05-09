@@ -1,0 +1,604 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"st",
+				"statDict"
+			],
+			[
+				"sta",
+				"statName"
+			],
+			[
+				"stat",
+				"statDict"
+			],
+			[
+				"get",
+				"getUpvoteRatioInTop"
+			],
+			[
+				"upv",
+				"upvoteRatio"
+			],
+			[
+				"sub",
+				"submission"
+			],
+			[
+				"nu",
+				"numComments"
+			],
+			[
+				"subre",
+				"subreddit"
+			],
+			[
+				"num",
+				"numSubmissions"
+			],
+			[
+				"getTotal",
+				"getTotalUpvotesInTop"
+			],
+			[
+				"s",
+				"subredditName"
+			],
+			[
+				"subs",
+				"subscribers"
+			],
+			[
+				"name",
+				"nameList"
+			],
+			[
+				"ind",
+				"indDict"
+			],
+			[
+				"load",
+				"loadDataFile"
+			],
+			[
+				"link",
+				"linksList"
+			],
+			[
+				"nodes",
+				"nodesList"
+			],
+			[
+				"Item",
+				"itemList"
+			],
+			[
+				"resul",
+				"results"
+			],
+			[
+				"make",
+				"makeDataDictionary"
+			],
+			[
+				"links",
+				"linksList"
+			],
+			[
+				"item",
+				"items"
+			],
+			[
+				"str",
+				"stroke-width"
+			],
+			[
+				"stroke",
+				"stroke-opacity"
+			],
+			[
+				"subred",
+				"Subreddit"
+			],
+			[
+				"su",
+				"submission"
+			],
+			[
+				"Sub",
+				"SubredditAnalyzer"
+			],
+			[
+				"comm",
+				"comments"
+			],
+			[
+				"n",
+				"nChildren"
+			],
+			[
+				"M",
+				"metaStats"
+			],
+			[
+				"subRe",
+				"subredditName"
+			],
+			[
+				"subreddi",
+				"subredditName"
+			],
+			[
+				"T",
+				"TRIES_LIMIT"
+			],
+			[
+				"re",
+				"results"
+			],
+			[
+				"key",
+				"keys"
+			],
+			[
+				"join",
+				"joinDicts"
+			],
+			[
+				"nework",
+				"networkDict"
+			],
+			[
+				"networ",
+				"networkDict"
+			],
+			[
+				"net",
+				"networkDict"
+			],
+			[
+				"subredd",
+				"subredditName"
+			],
+			[
+				"suc",
+				"subscriberString"
+			],
+			[
+				"getS",
+				"getSubscriberCount"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"color",
+				"color"
+			],
+			[
+				"selec",
+				"selectAll"
+			],
+			[
+				"sr",
+				"srDict"
+			],
+			[
+				"It",
+				"itemList"
+			],
+			[
+				"val",
+				"valueList"
+			],
+			[
+				"mak",
+				"makeIndexDictionary"
+			],
+			[
+				"source",
+				"sourceInd"
+			],
+			[
+				"target",
+				"targetInd"
+			],
+			[
+				"targ",
+				"targetInd"
+			],
+			[
+				"sourc",
+				"sourceInd"
+			],
+			[
+				"sour",
+				"sourceInd"
+			],
+			[
+				"mou",
+				"mousedownAnimate"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "main.py",
+			"settings":
+			{
+				"buffer_size": 5150,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "\n# ------- deprecated string stuff -------\ndef resultsToString(r):\n    s = '{\\n'\n\n    nodesString = ' \"nodes\": [\\n'\n    linksString = ' \"links\": [\\n'\n\n    (indDict,itemList) = makeIndexDictionary(r.networkDict)\n\n    for i in range(len(itemList)):\n        name = itemList[i]\n        if(name in r.subsDict):\n            subs = r.subsDict[name]\n        else:\n            subs = 1\n\n        nodesString += makeNodeLine(name,subs)\n        if i < len(itemList) - 1:\n            nodesString += ',\\n'\n        else:\n            nodesString += '\\n'\n\n    #refactor plox\n    items = r.networkDict.items()\n    for i in range(len(items)):\n        st = items[i][0]\n        tList = items[i][1]\n\n        for j in range(len(tList)):\n            t = tList[j]\n\n            sI = indDict[st]\n            tI = indDict[t]\n\n            linksString += makeLinkLine(sI,tI)\n\n            if (i == len(items) - 1) and (j == len(tList) - 1):\n                linksString += '\\n'\n            else:\n                linksString += ',\\n'\n\n\n    nodesString += \" ],\\n\"\n    linksString += \" ]\\n\"\n\n    s += nodesString + linksString + \"}\\n\"\n\n    return s\n\n\ndef makeNodeLine(name,size):\n    return '{ \"name\": \"' + name + '\", \"subscribers\":' + str(size) + '}'\n\ndef makeLinkLine(sInd,tInd):\n    return '  { \"source\": ' + str(sInd) + ', \"target\": ' + str(tInd) + '}'\n",
+			"file": "datawriter.py",
+			"file_size": 0,
+			"file_write_time": 1368089812000000,
+			"settings":
+			{
+				"buffer_size": 1322,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 3078,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "redditinfo.py",
+			"settings":
+			{
+				"buffer_size": 2641,
+				"line_ending": "Unix",
+				"name": "import praw"
+			}
+		},
+		{
+			"file": "reddit.py",
+			"settings":
+			{
+				"buffer_size": 1950,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "metastats.py",
+			"settings":
+			{
+				"buffer_size": 470,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/august/Documents/Code/Social Nets/deprecated.py",
+		"/Users/august/Documents/Code/Social Nets/debug.py",
+		"/Users/august/Documents/Code/Social Nets/reddit.py",
+		"/Users/august/Documents/Code/Social Nets/graph ex/text.html",
+		"/Users/august/Documents/Code/Social Nets/index.html",
+		"/Users/august/Documents/Code/Social Nets/barChartTest.html",
+		"/Users/august/Documents/Code/Social Nets/main.py",
+		"/Users/august/Library/Application Support/Sublime Text 2/Packages/User/HTML.sublime-settings",
+		"/Users/august/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/august/Documents/Code/Social Nets/graph ex/index.html",
+		"/Users/august/Documents/Code/Social Nets/data.json",
+		"/Users/august/Documents/Code/Social Nets/graph ex/data.json",
+		"/Users/august/Documents/Code/Social Nets/graph ex/miserables.json",
+		"/Users/august/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"});\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "main.py",
+					"settings":
+					{
+						"buffer_size": 5150,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3226,
+								3226
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1250.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "datawriter.py",
+					"settings":
+					{
+						"buffer_size": 1322,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								42,
+								42
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 2.0,
+						"translation.y": 111.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "index.html",
+					"settings":
+					{
+						"buffer_size": 3078,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								229,
+								229
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 3,
+					"file": "redditinfo.py",
+					"settings":
+					{
+						"buffer_size": 2641,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1681,
+								1681
+							]
+						],
+						"settings":
+						{
+							"auto_name": "import praw",
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 504.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "reddit.py",
+					"settings":
+					{
+						"buffer_size": 1950,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								175,
+								175
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 6.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "metastats.py",
+					"settings":
+					{
+						"buffer_size": 470,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								469,
+								469
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

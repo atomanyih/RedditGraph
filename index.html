@@ -19,6 +19,11 @@ circle.node {
   font-size: 8pt;
 }
 
+marker#arrow {
+    stroke: #999;
+    fill: #999;
+}
+
 </style>
 <body>
 <script>
@@ -49,10 +54,26 @@ d3.json("data.json", function(error, graph) {
                       ,d3.max(graph.nodes, function(d) {return d.subscribers;})])
               .range([2,20]);
 
+//building arrows
+svg.append("svg:defs").selectAll("marker")
+    .data(["arrow"])      // Different link/path types can be defined here
+  .enter().append("svg:marker")    // This section adds in the arrows
+    .attr("id", String)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 15)
+    .attr("refY", -1.5)
+    .attr("markerWidth", 3)
+    .attr("markerHeight", 3)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+
   var link = svg.append("svg:g").selectAll(".link")
       .data(graph.links)
     .enter().append("line")
-      .attr("class", "link");
+      .attr("class", "link")
+      .attr("marker-end", "url(#arrow)");
 
   var node = svg.append("svg:g").selectAll(".node")
       .data(graph.nodes)
@@ -66,11 +87,11 @@ d3.json("data.json", function(error, graph) {
       .data(force.nodes())
       .enter().append("svg:g");
 
-  textLayer.append("svg:text")
+  /*textLayer.append("svg:text")
     .attr("x", 8)
     .attr("y", 8)
     .classed("label", true)
-    .text(function(d) {return d.name;});
+    .text(function(d) {return d.name;});*/
 
   textLayer.attr("transform", function(d) {
     return "translate(" + d.x + "," + d.y + ")";

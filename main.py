@@ -2,14 +2,19 @@ import sys, getopt, json
 
 from reddit import *
 from metastats import *
+from redditinfo import *
 
 visitedSubreddits = []
 metaStats = MetaStats()
 
 class Results:
     def __init__(self):
+        #dictionary of connections
         self.networkDict = {}
+        #dictionary of subscriber counts
         self.subsDict = {}
+        #dictionary of dictionaries of other data
+        self.statsDict = {}
 
     def join(self,other):
         # network dicts should never have entries that disagree
@@ -19,6 +24,13 @@ class Results:
     def addInfo(self,info):
         self.networkDict[info.name] = info.children
         self.subsDict[info.name] = info.subscribers
+
+    def addStats(self,statName,statDict):
+        if statName not in statsDict:
+            statsDict[statName] = statDict
+        else:
+            statsDict[statName] = joinDicts(statsDict[statName],statDict)
+
 
 #d2 has precedence
 def joinDicts(d1,d2):
@@ -36,7 +48,7 @@ def doStuff(source, depth):
 
     info = getSubredditInfo(source)
     if info is None:
-        return Results()
+        return None
         
     results = Results()
     results.addInfo(info)
@@ -89,53 +101,6 @@ def makeIndexDictionary(d):
 
     return (indDict,itemList) #this sucks
 
-def resultsToString(r):
-    s = '{\n'
-
-    nodesString = ' "nodes": [\n'
-    linksString = ' "links": [\n'
-
-    (indDict,itemList) = makeIndexDictionary(r.networkDict)
-
-    for i in range(len(itemList)):
-        name = itemList[i]
-        if(name in r.subsDict):
-            subs = r.subsDict[name]
-        else:
-            subs = 1
-
-        nodesString += makeNodeLine(name,subs)
-        if i < len(itemList) - 1:
-            nodesString += ',\n'
-        else:
-            nodesString += '\n'
-
-    #refactor plox
-    items = r.networkDict.items()
-    for i in range(len(items)):
-        st = items[i][0]
-        tList = items[i][1]
-
-        for j in range(len(tList)):
-            t = tList[j]
-
-            sI = indDict[st]
-            tI = indDict[t]
-
-            linksString += makeLinkLine(sI,tI)
-
-            if (i == len(items) - 1) and (j == len(tList) - 1):
-                linksString += '\n'
-            else:
-                linksString += ',\n'
-
-
-    nodesString += " ],\n"
-    linksString += " ]\n"
-
-    s += nodesString + linksString + "}\n"
-
-    return s
 
 def makeDataDictionary(results):
     dataDict = {}
@@ -144,7 +109,11 @@ def makeDataDictionary(results):
 
     nodesList = []
     for item in nodeList:
-        node = {'name': item, 'subscribers': results.subsDict[item]}
+        if item in results.subsDict:
+            subscribers = results.subsDict[item]
+        else:
+            subscribers = 1
+        node = {'name': item, 'subscribers': subscribers}
         nodesList += [node]
 
     linksList = []
@@ -163,12 +132,6 @@ def makeDataDictionary(results):
 
     return dataDict
 
-
-def makeNodeLine(name,size):
-    return '{ "name": "' + name + '", "subscribers":' + str(size) + '}'
-
-def makeLinkLine(sInd,tInd):
-    return '  { "source": ' + str(sInd) + ', "target": ' + str(tInd) + '}'
 
 def writeDictToFile(filename,d):
     s = json.dumps(d, indent=2, separators=(',', ': '))
@@ -215,7 +178,7 @@ def usage():
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, 'c:f:')
+        opts, args = getopt.getopt(argv, 's:f:')
     except getopt.GetoptError as err:
         print err
         usage()
@@ -240,7 +203,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-f':
             filename = arg
-        elif opt == '-c':
+        elif opt == '-s':
             origFilename = arg
     
     results = Results()
