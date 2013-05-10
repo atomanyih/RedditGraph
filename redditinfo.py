@@ -40,8 +40,8 @@ class SubredditAnalyzer:
 		self.currentNumSubmissions = 0
 
 	def getTotalCommentsInTop(self, subredditName, numSubmissions = 10):
-		self.getTopAndCache(subredditName,numSubmissions)
-		top = self.currentSubredditTop
+		subreddit = self.reddit.get_subreddit(subredditName)
+		top = subreddit.get_top_from_all(limit = numSubmissions)
 		numComments = 0
 		for submission in top:
 			#print numComments
@@ -53,8 +53,8 @@ class SubredditAnalyzer:
 		return numComments/float(numSubmissions)
 
 	def getTotalUpvotesInTop(self, subredditName, numSubmissions = 10):
-		self.getTopAndCache(subredditName,numSubmissions)
-		top = self.currentSubredditTop
+		subreddit = self.reddit.get_subreddit(subredditName)
+		top = subreddit.get_top_from_all(limit = numSubmissions)
 		numUpvotes = 0
 		for submission in top:
 			#print numUpvotes
@@ -66,10 +66,11 @@ class SubredditAnalyzer:
 		return numUpvotes/float(numSubmissions)
 
 	def getUpvoteRatioInTop(self, subredditName, numSubmissions = 10):
-		self.getTopAndCache(subredditName,numSubmissions)
+		subreddit = self.reddit.get_subreddit(subredditName)
+		top = subreddit.get_top_from_all(limit = numSubmissions)
 		upvoteRatio = 0.0
 		try:
-			for submission in self.currentSubredditTop:
+			for submission in top:
 				ups = submission.ups
 				total = ups + submission.downs
 				upvoteRatio += ups/float(total)
@@ -80,15 +81,12 @@ class SubredditAnalyzer:
 			return -1.0
 		return upvoteRatio/numSubmissions
 
-	def getTopAndCache(self, subredditName, numSubmissions = 10):
-		## doesn't work, for some reason second one always fails
-		if subredditName != self.currentSubredditName:
-			self.currentSubredditName = subredditName
-			self.currentSubreddit = self.reddit.get_subreddit(subredditName)
-			self.currentSubredditTop = self.currentSubreddit.get_top_from_all(limit = numSubmissions)
+	def getStatsFromTop(self, subredditName, numSubmissions = 10):
+		subreddit = self.reddit.get_subreddit(subredditName)
+		top = subreddit.get_top_from_all(limit = numSubmissions)
+		#should eventually just do everything
 
-
-
-#s = SubredditAnalyzer()
-#print s.getUpvoteRatioInTop('happy'), "percent approval"
-
+"""s = SubredditAnalyzer()
+print s.getUpvoteRatioInTop('happy'), "percent approval"
+print s.getTotalUpvotesInTop('happy'), "upvotes in top"
+"""

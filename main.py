@@ -5,7 +5,6 @@ from metastats import *
 from redditinfo import *
 
 visitedSubreddits = []
-nonexistantSubreddits = []
 metaStats = MetaStats()
 
 class Results:
@@ -76,8 +75,7 @@ def doStuff(source, depth):
     global visitedSubreddits
     visitedSubreddits += [source]
 
-    global nonexistantSubreddits
-    if depth == 0 or source in nonexistantSubreddits:
+    if depth == 0:
         return Results()
 
     info = getSubredditInfo(source)
@@ -91,7 +89,7 @@ def doStuff(source, depth):
     metaStats.compareChildren(source,len(info.children))
 
     if depth == 1:
-        results.networkDict = {}
+        #results.networkDict = {}
         return results
 
     for subreddit in info.children:
@@ -153,6 +151,7 @@ def makeDataDictionary(results):
 
     (indDict,nodeList) = makeIndexDictionary(results)
 
+
     nodesList = []
     for item in nodeList:
         if item in results.subsDict:
@@ -181,7 +180,7 @@ def makeDataDictionary(results):
 
     dataDict['nodes'] = nodesList
     dataDict['links'] = linksList
-    #print nodesList
+    print nodesList
     #print linksList
 
     return dataDict
@@ -206,12 +205,19 @@ def decodeData(dataDict):
     linksList = dataDict['links']
 
 
-    subsDict = {}
+    # here it's a dict of dicts
+    statsDict = {}
     nameList = []
     for node in nodesList:
         name = str(node['name'])
         nameList += [name]
-        subsDict[name] = node['subscribers']
+        #figure out other data
+        for thing in node.keys():
+            if thing != 'name':
+                if thing not in statsDict:
+                    statsDict[thing] = {}
+                statsDict[thing][name] = node[thing]
+                
 
     networkDict = {}
     for link in linksList:
@@ -222,7 +228,8 @@ def decodeData(dataDict):
         networkDict[source] += [target]
 
     results.networkDict = networkDict
-    results.subsDict = subsDict
+    results.subsDict = statsDict['subscribers']
+    #print linksList
 
     return results
 
@@ -266,9 +273,12 @@ def main(argv):
     results = Results()
 
     if origFilename is not None:
-        results = loadDataFile(origFilename)  
+        results = loadDataFile(origFilename)
+        print results.networkDict
 
     results.join(doStuff(subreddit, depth))
+
+    print results.networkDict
 
     subredditList = results.subsDict.keys()
 
