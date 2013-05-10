@@ -42,6 +42,7 @@ def getOtherData(subredditList):
     analyzer = SubredditAnalyzer()
     avgCommentsDict = {}
     ratioDict = {}
+    nsfwDict = {}
 
     for name in subredditList:
         print name.upper()
@@ -53,19 +54,25 @@ def getOtherData(subredditList):
         except:
             ratio = .5
 
-        avg = 1
-        """
         print "- getting avg comments"
 
         try:
             avg = analyzer.getAvgCommentsInTop(name)
         except:
             avg = 1
-        """
+
+        print "- getting nsfw-ness"
+
+        try:
+            nsfw = analyzer.getNSFWRatioInTop(name)
+        except:
+            nsfw = 0.0
+
         avgCommentsDict[name] = avg
         ratioDict[name] = ratio
+        nsfwDict[name] = nsfw
 
-    statsDict = {"average_comments": avgCommentsDict, "upvote_ratio": ratioDict}
+    statsDict = {"average_comments": avgCommentsDict, "upvote_ratio": ratioDict, "nsfw": nsfwDict}
     return statsDict
 
 def doStuff(source, depth):
@@ -80,7 +87,6 @@ def doStuff(source, depth):
 
     info = getSubredditInfo(source)
     if info is None:
-        nonexistantSubreddits += [source]
         return Results() #None
         
     results = Results()
@@ -219,7 +225,8 @@ def decodeData(dataDict):
         networkDict[source] += [target]
 
     results.networkDict = networkDict
-    results.subsDict = statsDict['subscribers']
+    results.subsDict = statsDict.pop('subscribers')
+    results.statsDict = statsDict #overwritten anyway, I think
     #print linksList
 
     return results
@@ -265,11 +272,9 @@ def main(argv):
 
     if origFilename is not None:
         results = loadDataFile(origFilename)
-        print results.networkDict
+        #print results.statsDict
 
     results.join(doStuff(subreddit, depth))
-
-    print results.networkDict
 
     subredditList = results.subsDict.keys()
 

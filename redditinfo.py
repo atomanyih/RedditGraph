@@ -81,6 +81,15 @@ class SubredditAnalyzer:
 			return -1.0
 		return upvoteRatio/numSubmissions
 
+	def getNSFWRatioInTop(self, subredditName, numSubmissions = 10):
+		subreddit = self.reddit.get_subreddit(subredditName)
+		top = subreddit.get_top_from_all(limit = numSubmissions)
+		numNSFW = 0
+		for submission in top:
+			#print numUpvotes
+			numNSFW += submission.over_18
+		return numNSFW/float(numSubmissions)
+
 	def getStatsFromTop(self, subredditName, numSubmissions = 10):
 		subreddit = self.reddit.get_subreddit(subredditName)
 		top = subreddit.get_top_from_all(limit = numSubmissions)
