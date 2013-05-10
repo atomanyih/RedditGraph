@@ -40,9 +40,9 @@ def getSubredditsFromSidebar(side):
 
 		address = link.get('href')
 		if address is not None:
-			name = address[3:]
+			name = address.split('/r/')[-1]
 			#print name # some subreddits do this wrong, the butts
-			if address[:3] == '/r/' and isValidSubredditName(name): 
+			if isValidSubredditName(name): 
 				subreddits += [str(name).lower()]
 
 	return subreddits
@@ -91,3 +91,5 @@ def getPage(subredditName):
 # only alphanumeric
 def isValidSubredditName(name):
     return re.match('^[\w-]+$', name) is not None
+
+print getSubredditInfo("programming").children
