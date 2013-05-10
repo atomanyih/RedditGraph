@@ -118,25 +118,16 @@ def doStuff(source, depth):
 
 # from network dict
 def makeIndexDictionary(r):
-    d = r.networkDict
+    d = r.subsDict
     indDict = {}
-    itemList= d.keys()
-    valueList = d.values()
-    
-    for values in valueList:
-        for value in values:
-            if value not in itemList:
-                if value in r.subsDict: #using subs dict to checka actual existence
-                    itemList += [value]
-                else:
-                    print value, "not found, removing"
+    itemList = d.keys()
 
     i = 0
     for item in itemList:
         indDict[item] = i
         i += 1
 
-    return (indDict,itemList) #this sucks
+    return (indDict,itemList)
 
 def makeNode(item, subscribers, statsDict):
     node = {'name': item, 'subscribers': subscribers}
