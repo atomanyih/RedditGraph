@@ -27,6 +27,7 @@ marker#arrow {
 <body>
 <script>
 
+//This is how I load dator
 function getAnchor() {
     //console.log("butts");
     return (document.URL.split('#').length > 1) ? document.URL.split('#')[1] : null;
@@ -64,14 +65,23 @@ force
               .range([3,20])
               .clamp(true);
 
-  var colorScale = d3.scale.linear()
-              .domain([.5//d3.min(graph.nodes, function(d) {return d.upvote_ratio})
-                ,d3.max(graph.nodes, function(d) {return d.upvote_ratio})])
+  var upvoteScale = d3.scale.linear()
+              .domain([.5 ,1])
               .range([[255,255,255],[255,128,0]]);
+
+  var nsfwScale = d3.scale.linear()
+              .domain([0,1])
+              .range([[255,255,255],[255,0,0]]);
+
+  var participationScale = d3.scale.linear()
+              .domain([0,.3])
+              .range([[255,255,255],[255,0,128]]);
 
   function colorGenerator(d)
   {
-    scaled = colorScale(d.upvote_ratio)
+    scaled = upvoteScale(d.upvote_ratio);
+    //scaled = nsfwScale(d.nsfw);
+    //scaled = participationScale(d.average_comments/d.subscribers);
     return "rgb("+Math.round(scaled[0])+","+Math.round(scaled[1])+","+Math.round(scaled[2])+")";
   }
 

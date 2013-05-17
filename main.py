@@ -44,8 +44,11 @@ def getOtherData(subredditList):
     ratioDict = {}
     nsfwDict = {}
 
+    i = 1
+    n = len(subredditList)
+
     for name in subredditList:
-        print name.upper()
+        print "("+str(i)+"/"+str(n)+")", name.upper()
 
         print "- getting upvote_ratio"
 
@@ -71,6 +74,8 @@ def getOtherData(subredditList):
         avgCommentsDict[name] = avg
         ratioDict[name] = ratio
         nsfwDict[name] = nsfw
+
+        i+=1
 
     statsDict = {"average_comments": avgCommentsDict, "upvote_ratio": ratioDict, "nsfw": nsfwDict}
     return statsDict
@@ -261,9 +266,9 @@ def main(argv):
 
 
     for opt, arg in opts:
-        if opt == '-f':
+        if opt == '-f':  #filename
             filename = arg
-        elif opt == '-s':
+        elif opt == '-s':  #from file
             origFilename = arg
     
     # crawling

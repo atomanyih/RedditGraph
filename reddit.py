@@ -92,4 +92,4 @@ def getPage(subredditName):
 def isValidSubredditName(name):
     return re.match('^[\w-]+$', name) is not None
 
-print getSubredditInfo("programming").children
+#print getSubredditInfo("programming").children
