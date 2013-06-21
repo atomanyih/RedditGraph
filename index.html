@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script> 
 <style>
 
 circle.node {
@@ -27,7 +25,7 @@ marker#arrow {
 
 </style>
 <body>
-  <select id="mode">
+  <select id="mode" onchange="changeColor(value);">
     <option value="upvote_ratio">Positivity</option>
     <option value="average_comments">Participation</option>
     <option value="nsfw">NSFWness</option>

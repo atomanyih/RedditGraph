@@ -132,10 +132,9 @@ svg.append("svg:defs").selectAll("marker")
   });
 });
 
-$( "select" ).on( "change", function() {
-        console.log("change");
-        display = $( "select" ).val();
-        node.selectAll("circle")
-            .transition()
-            .attr("fill",colorGenerator);
-      });
+function changeColor(value) {
+    display = value;
+    node.selectAll("circle")
+        .transition()
+        .attr("fill",colorGenerator);
+}
