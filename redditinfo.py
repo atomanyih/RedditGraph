@@ -1,5 +1,6 @@
 import praw
 
+import slurs
 """userAgent = ('Subreddit analyzer for RedditGraph by /u/augzodia')
 
 r = praw.Reddit(userAgent)
@@ -32,6 +33,7 @@ upvote/downvote ratio in top
 
 class SubredditAnalyzer:
 	userAgent = ('Subreddit analyzer for RedditGraph by /u/augzodia')
+	
 	def __init__(self):
 		self.reddit = praw.Reddit(self.userAgent)
 		self.currentSubredditName = None
@@ -90,6 +92,23 @@ class SubredditAnalyzer:
 			numNSFW += submission.over_18
 		return numNSFW/float(numSubmissions)
 
+	def getSlursInComments(self, subredditName, numSubmissions = 10):
+		subreddit = self.reddit.get_subreddit(subredditName)
+		top = subreddit.get_top_from_all(limit = numSubmissions)
+		numSlurs = 0
+		for submission in top:
+			comments = praw.helpers.flatten_tree(submission.comments)
+			#if containsSlur(submission.title):
+			#	numSlurs += 1;
+			for comment in comments:
+				if not isinstance(comment,praw.objects.MoreComments):
+					s = comment.body
+					if slurs.containsSlur(s):
+						numSlurs += 1;
+		print numSlurs
+
+				
+
 	def getStatsFromTop(self, subredditName, numSubmissions = 10):
 		subreddit = self.reddit.get_subreddit(subredditName)
 		top = subreddit.get_top_from_all(limit = numSubmissions)
@@ -99,3 +118,7 @@ class SubredditAnalyzer:
 print s.getUpvoteRatioInTop('happy'), "percent approval"
 print s.getTotalUpvotesInTop('happy'), "upvotes in top"
 """
+
+if __name__ == "__main__":
+	a = SubredditAnalyzer()
+	a.getSlursInComments("pics")
