@@ -136,5 +136,6 @@ function changeColor(value) {
     display = value;
     node.selectAll("circle")
         .transition()
-        .attr("fill",colorGenerator);
+        .attr("fill",colorGenerator)
+        .duration(500);
 }
